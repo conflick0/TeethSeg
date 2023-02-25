@@ -26,6 +26,7 @@ def get_rel_data_dicts(data_dicts):
 
 
 def build_data_dicts(
+        get_data_dicts_fn,
         src_data_dir,
         dst_data_json,
         split_train_ratio,
@@ -33,7 +34,7 @@ def build_data_dicts(
         fold
     ):
 
-    data_dicts = get_data_dicts(src_data_dir)
+    data_dicts = get_data_dicts_fn(src_data_dir)
     train_files, val_files, test_files = split_data_dicts(
         data_dicts,
         fold,
@@ -118,6 +119,7 @@ if __name__ == '__main__':
     dst_data_json = os.path.join(data_dir, 'data.json')
 
     build_data_dicts(
+        get_data_dicts,
         src_data_dir=data_dir,
         dst_data_json=dst_data_json,
         split_train_ratio=0.7,

@@ -30,5 +30,6 @@ def get_label_names(data_name):
         'hvsmr': ['M', 'B'],
         'segthor': ['C'],
         'teeth': [str(i) for i in range(1, 29)],
+        'tooth': ['T'],
     }
     return label_names_map[data_name]

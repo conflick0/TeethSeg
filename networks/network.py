@@ -1,5 +1,6 @@
 from monai.networks.nets import SwinUNETR, UNETR, UNet, AttentionUnet
 
+from networks.networkx.unetcnx_x3_2_2 import UNETCNX_X3_2_2
 from networks.CoTr.network_architecture.ResTranUnet import ResTranUnet as CoTr
 
 
@@ -66,6 +67,12 @@ def network(model_name, args):
             weight_std=False,
             deep_supervision=False
         ).to(args.device)
+    elif model_name == 'unetcnx_x3_2_2':
+        return UNETCNX_X3_2_2(
+              in_channels=args.in_channels,
+              out_channels=args.out_channels,
+              feature_size=24,
+          ).to(args.device)
     else:
-      raise ValueError(f'not found model name: {model_name}')
+        raise ValueError(f'not found model name: {model_name}')
 
