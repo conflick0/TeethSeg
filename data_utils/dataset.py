@@ -28,6 +28,7 @@ def get_label_names(data_name):
         'chgh': ['C'],
         'mmwhs': ['LV', 'RV', 'LA', 'RA', 'MLV', 'AA', 'PA'],
         'hvsmr': ['M', 'B'],
-        'segthor': ['C']
+        'segthor': ['C'],
+        'teeth': [str(i) for i in range(1, 29)],
     }
     return label_names_map[data_name]

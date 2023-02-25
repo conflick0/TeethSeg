@@ -95,6 +95,11 @@ def get_inf_transform(keys, args):
             LoadImaged(keys=keys),
             AddChanneld(keys=keys),
             Orientationd(keys=keys, axcodes="RAS"),
+            Spacingd(
+                keys=keys,
+                pixdim=(args.space_x, args.space_y, args.space_z),
+                mode=mode,
+            ),
             AddChanneld(keys=keys),
             ToTensord(keys=keys)
         ]

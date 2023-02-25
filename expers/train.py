@@ -7,9 +7,6 @@ import pandas as pd
 
 import torch
 from torch.utils.tensorboard import SummaryWriter
-import ray
-from ray import air, tune
-from ray.tune import CLIReporter
 
 from monai.inferers import sliding_window_inference
 from monai.losses import DiceCELoss
@@ -19,40 +16,10 @@ from monai.transforms import AsDiscrete
 from expers.args import get_parser, map_args_transform, map_args_optim, map_args_lrschedule
 from data_utils.dataset import DataLoader, get_label_names
 from data_utils.utils import get_pids_by_loader
-from runners.tuner import run_training
+from runners.trainer import run_training
 from runners.tester import run_testing
 from networks.network import network
 from optimizers.optimizer import Optimizer, LR_Scheduler
-
-
-def main(config, args=None):
-    if args.tune_mode == 'transform':
-        args = map_args_transform(config, args)
-    elif args.tune_mode == 'lrschedule' or args.tune_mode == 'lrschedule_epoch':
-        args = map_args_transform(config['transform'], args)
-        args = map_args_optim(config['optim'], args)
-        args = map_args_lrschedule(config['lrschedule'], args)
-    else:
-        # for LinearWarmupCosineAnnealingLR
-        args.max_epochs = args.max_epoch
-        print('a_max', args.a_max)
-        print('a_min', args.a_min)
-        print('space_x', args.space_x)
-        print('roi_x', args.roi_x)
-        print('lr', args.lr)
-        print('weight_decay', args.weight_decay)
-        print('warmup_epochs',args.warmup_epochs)
-        print('max_epochs',args.max_epochs)
-    
-    
-    # train
-    args.test_mode = False
-    args.checkpoint = os.path.join(args.model_dir, 'final_model.pth')
-    main_worker(args)
-    # test
-    args.test_mode = True
-    args.checkpoint = os.path.join(args.model_dir, 'best_model.pth')
-    main_worker(args)
 
 
 def main_worker(args):
@@ -192,75 +159,12 @@ def main_worker(args):
         print('avg dice:', avg_dice)
         print('avg hd95:', avg_hd95)
         print(eval_tt_df.to_string())
-        
-        tune.report(
-            tt_dice=avg_dice,
-            tt_hd95=avg_hd95,
-            val_bst_acc=best_acc, 
-            esc=early_stop_count,
-        )
 
 
 if __name__ == "__main__":
     args = get_parser(sys.argv[1:])
     
-    if args.tune_mode == 'test':
-        print('test mode')
-    elif args.tune_mode == 'train':
-        search_space = {
-            "exp": tune.grid_search([
-              {
-                  'exp': args.exp_name,
-              }
-            ])
-        }
-    elif args.tune_mode == 'transform':
-        search_space = {
-            'intensity': tune.grid_search([
-                [-42, 423], 
-                [13, 320], 
-                [32, 294]
-            ]),
-            'space': tune.grid_search([
-                [0.76,0.76,1.0],
-                [1.0,1.0,1.0]
-            ]),
-            'roi': tune.grid_search([
-                [96,96,96],
-                [128,128,128],
-            ]),
-        }
-    else:
-        raise ValueError(f"Invalid args tune mode:{args.tune_mode}")
-
-    trainable_with_cpu_gpu = tune.with_resources(partial(main, args=args), {"cpu": 2, "gpu": 1})
+    # for LinearWarmupCosineAnnealingLR
+    args.max_epochs = args.max_epoch
     
-    if args.resume_tuner:
-        print(f'resume tuner form {args.root_exp_dir}')
-        restored_tuner = tune.Tuner.restore(os.path.join(args.root_exp_dir, args.exp_name))
-        result = restored_tuner.fit()
-        
-        # for manual test
-        if args.tune_mode == 'test':
-            print('run test mode ...')
-            # get best model path
-            result_grid = restored_tuner.get_results()
-            best_result = result_grid.get_best_result(metric="tt_dice", mode="max")
-            model_pth = os.path.join( best_result.log_dir, 'models', 'best_model.pth')
-            # test
-            # for LinearWarmupCosineAnnealingLR
-            args.max_epochs = args.max_epoch
-            args.test_mode = True
-            args.checkpoint = os.path.join(model_pth)
-            main_worker(args)
-    else:
-        tuner = tune.Tuner(
-            trainable_with_cpu_gpu,
-            param_space=search_space,
-            run_config=air.RunConfig(
-                name=args.exp_name,
-                local_dir=args.root_exp_dir
-            )
-        )
-        tuner.fit()
-    
+    main_worker(args)

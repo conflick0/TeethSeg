@@ -1,7 +1,4 @@
 import sys
-from expers.config import config
-# set package path
-sys.path.append(config.ROOT_DIR)
 
 from pathlib import PurePath
 import torch

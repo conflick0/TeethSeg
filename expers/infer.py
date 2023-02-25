@@ -1,8 +1,4 @@
 import sys
-from expers.config import config
-
-# set package path
-sys.path.append(config.ROOT_DIR)
 
 import os
 from functools import partial

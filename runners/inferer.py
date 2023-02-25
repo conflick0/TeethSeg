@@ -95,9 +95,11 @@ def run_infering(
     # eval infer tta
     if 'label' in data.keys():
         dc_vals, hd95_vals = eval_label_pred(data, args.out_channels, args.device)
-        print('infer test time aug:')
+        print('\ninfer test time aug:')
         print('dice:', dc_vals)
         print('hd95:', hd95_vals)
+        print('avg dice:', dc_vals.mean())
+        print('avg hd95:', hd95_vals.mean())
         
         # post label transform 
         sqz_transform = SqueezeDimd(keys=['label'])
@@ -115,9 +117,11 @@ def run_infering(
         data['label_meta_dict'] = lbl_data['label']
         
         dc_vals, hd95_vals = eval_label_pred(data, args.out_channels, args.device)
-        print('infer test original:')
+        print('\ninfer test original:')
         print('dice:', dc_vals)
         print('hd95:', hd95_vals)
+        print('avg dice:', dc_vals.mean())
+        print('avg hd95:', hd95_vals.mean())
     
     # save pred result
     filename = get_filename(data)
