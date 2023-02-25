@@ -7,6 +7,7 @@ from monai.transforms import (
     RandCropByPosNegLabeld,
     RandShiftIntensityd,
     ScaleIntensityRanged,
+    ScaleIntensityRangePercentilesd,
     Spacingd,
     RandRotate90d,
     ToTensord
@@ -22,6 +23,14 @@ def get_train_transform(args):
                 keys=["image", "label"],
                 pixdim=(args.space_x, args.space_y, args.space_z),
                 mode=("bilinear", "nearest"),
+            ),
+            ScaleIntensityRangePercentilesd(
+                keys=["image"], 
+                lower=1, 
+                upper=99, 
+                b_min=0.0,
+                b_max=1.0,
+                clip=True
             ),
             RandCropByPosNegLabeld(
                 keys=["image", "label"],
@@ -74,6 +83,14 @@ def get_val_transform(args):
                 pixdim=(args.space_x, args.space_y, args.space_z),
                 mode=("bilinear", "nearest"),
             ),
+            ScaleIntensityRangePercentilesd(
+                keys=["image"], 
+                lower=1, 
+                upper=99, 
+                b_min=0.0,
+                b_max=1.0,
+                clip=True
+            ),
             ToTensord(keys=["image", "label"])
         ]
     )
@@ -99,6 +116,14 @@ def get_inf_transform(keys, args):
                 keys=keys,
                 pixdim=(args.space_x, args.space_y, args.space_z),
                 mode=mode,
+            ),
+            ScaleIntensityRangePercentilesd(
+                keys=["image"], 
+                lower=1, 
+                upper=99, 
+                b_min=0.0,
+                b_max=1.0,
+                clip=True
             ),
             AddChanneld(keys=keys),
             ToTensord(keys=keys)
