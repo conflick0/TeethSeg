@@ -14,6 +14,32 @@ from monai.transforms import (
     LabelToMaskd
 )
 
+
+def scale_intensity(args):
+    if args.scale_intensity_type == 'percent':
+        print('use scale intensity by percent')
+        return ScaleIntensityRangePercentilesd(
+            keys=["image"], 
+            lower=1, 
+            upper=99, 
+            b_min=0.0,
+            b_max=1.0,
+            clip=True
+        )
+    elif args.scale_intensity_type == 'range':
+        print('use scale intensity by range')
+        return ScaleIntensityRanged(
+            keys=["image"], 
+            a_min=args.a_min, 
+            a_max=args.a_max, 
+            b_min=0.0, 
+            b_max=1.0, 
+            clip=True
+        )
+    else:
+        raise ValueError(f'Invalid scale intensity type: {args.scale_intensity_type}')
+
+
 def get_train_transform(args):
     return Compose(
         [
@@ -26,14 +52,7 @@ def get_train_transform(args):
                 pixdim=(args.space_x, args.space_y, args.space_z),
                 mode=("bilinear", "nearest"),
             ),
-            ScaleIntensityRangePercentilesd(
-                keys=["image"], 
-                lower=1, 
-                upper=99, 
-                b_min=0.0,
-                b_max=1.0,
-                clip=True
-            ),
+            scale_intensity(args),
             RandCropByPosNegLabeld(
                 keys=["image", "label"],
                 label_key="label",
@@ -86,14 +105,7 @@ def get_val_transform(args):
                 pixdim=(args.space_x, args.space_y, args.space_z),
                 mode=("bilinear", "nearest"),
             ),
-            ScaleIntensityRangePercentilesd(
-                keys=["image"], 
-                lower=1, 
-                upper=99, 
-                b_min=0.0,
-                b_max=1.0,
-                clip=True
-            ),
+            scale_intensity(args),
             ToTensord(keys=["image", "label"])
         ]
     )
@@ -121,14 +133,7 @@ def get_inf_transform(keys, args):
                 pixdim=(args.space_x, args.space_y, args.space_z),
                 mode=mode,
             ),
-            ScaleIntensityRangePercentilesd(
-                keys=["image"], 
-                lower=1, 
-                upper=99, 
-                b_min=0.0,
-                b_max=1.0,
-                clip=True
-            ),
+            scale_intensity(args),
             AddChanneld(keys=keys),
             ToTensord(keys=keys)
         ]

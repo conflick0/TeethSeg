@@ -45,6 +45,7 @@ def get_parser(argv):
 
     # transform
     parser.add_argument("--num_samples", default=2, type=int, help="number of samples")
+    parser.add_argument("--scale_intensity_type", default=None, type=str, help="scale intensity type, ex. percent or range")
     parser.add_argument("--a_min", default=-1000.0, type=float, help="a_min in ScaleIntensityRanged")
     parser.add_argument("--a_max", default=1000.0, type=float, help="a_max in ScaleIntensityRanged")
     parser.add_argument("--b_min", default=0.0, type=float, help="b_min in ScaleIntensityRanged")
