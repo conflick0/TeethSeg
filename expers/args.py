@@ -44,6 +44,7 @@ def get_parser(argv):
     parser.add_argument("--workers", default=2, type=int, help="number of workers")
 
     # transform
+    parser.add_argument("--select_label_num", default=29, type=int, help="num of select label (include bg) for LabelToMaskd")
     parser.add_argument("--num_samples", default=2, type=int, help="number of samples")
     parser.add_argument("--scale_intensity_type", default=None, type=str, help="scale intensity type, ex. percent or range")
     parser.add_argument("--a_min", default=-1000.0, type=float, help="a_min in ScaleIntensityRanged")
