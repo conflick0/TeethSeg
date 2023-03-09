@@ -115,14 +115,14 @@ if __name__ == '__main__':
     # extract_data_by_file_name(file_names, src_data_dir, dst_data_dir)
 
     # build data dict
-    data_dir = r'/nfs/Workspace/dataset/teeth/data_29'
+    data_dir = r'/nfs/Workspace/dataset/teeth/cindydata'
     dst_data_json = os.path.join(data_dir, 'data.json')
 
     build_data_dicts(
         get_data_dicts,
         src_data_dir=data_dir,
         dst_data_json=dst_data_json,
-        split_train_ratio=0.7,
-        num_fold=3,
-        fold=2,
+        split_train_ratio=0.8,
+        num_fold=2,
+        fold=1,
     )

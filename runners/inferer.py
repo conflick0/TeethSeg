@@ -2,6 +2,7 @@ import os
 from pathlib import PurePath
 
 import torch
+import numpy as np
 
 from monai.data import decollate_batch
 from monai.transforms import (
@@ -13,6 +14,7 @@ from monai.transforms import (
 from monai.metrics import DiceMetric, HausdorffDistanceMetric
 
 from data_utils.io import save_img
+from transforms.transform_utils import LabelToBinaryLabeld
 import matplotlib.pyplot as plt
 
 
@@ -55,7 +57,14 @@ def eval_label_pred(data, cls_num, device):
     )
     
     # batch data
-    val_label, val_pred = (data["label"].to(device), data["pred"].to(device))
+    val_label, val_pred = (data["label"].to(device), data["pred"].to(device))   
+    # cindy
+    # val_label = data["label"].to(device)
+    # if type(data["pred"]) is np.ndarray:
+    #     val_pred = torch.from_numpy(data["pred"]).to(device)
+    # else:
+    #     val_pred = data["pred"].to(device)
+   
     
     # check shape is 5
     val_label = check_channel(val_label)
@@ -88,6 +97,9 @@ def run_infering(
         post_transform,
         args
     ):
+    # jack
+    # get label cls
+    lbl_cls = data['label'].flatten().unique()
     
     # test
     data['pred'] = infer(model, data, model_inferer, args.device)
@@ -107,12 +119,22 @@ def run_infering(
     
     # post transform
     data = post_transform(data)
-    
+
     # eval infer origin
     if 'label' in data.keys():
         # get orginal label
         lbl_dict = {'label': data['label_meta_dict']['filename_or_obj']}
         lbl_data = LoadImaged(keys='label')(lbl_dict)
+            
+        # jack
+        # lbl_cls = data['pred'].flatten().unique()
+        # cindy
+        # lbl_cls = np.unique(data['pred'].flatten())
+        
+        if len(lbl_cls) == 2:
+            cvt = LabelToBinaryLabeld(keys=["label"])
+            lbl_data = cvt(lbl_data)
+        
         data['label'] = lbl_data['label']
         data['label_meta_dict'] = lbl_data['label']
         

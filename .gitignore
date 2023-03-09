@@ -5,6 +5,8 @@ dataset
 *.pth
 *.pt
 *.csv
+*.7z
+*.zip
 *events.out.tfevents.*
 infers
 tune_results/

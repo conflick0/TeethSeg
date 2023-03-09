@@ -13,7 +13,7 @@ from monai.transforms import (
     ToTensord,
     LabelToMaskd
 )
-
+from transforms.transform_utils import LabelToBinaryLabeld
 
 def scale_intensity(args):
     if args.scale_intensity_type == 'percent':
@@ -45,7 +45,8 @@ def get_train_transform(args):
         [
             LoadImaged(keys=["image", "label"]),
             AddChanneld(keys=["image", "label"]),
-            LabelToMaskd(keys=["label"], select_labels=[i for i in range(1, args.select_label_num)]),
+            LabelToBinaryLabeld(keys=["label"]),
+            # LabelToMaskd(keys=["label"], select_labels=[i for i in range(1, args.select_label_num)]),
             Orientationd(keys=["image", "label"], axcodes="RAS"),
             Spacingd(
                 keys=["image", "label"],
@@ -98,7 +99,8 @@ def get_val_transform(args):
         [
             LoadImaged(keys=["image", "label"]),
             AddChanneld(keys=["image", "label"]),
-            LabelToMaskd(keys=["label"], select_labels=[i for i in range(1, args.select_label_num)]),
+            LabelToBinaryLabeld(keys=["label"]),
+            # LabelToMaskd(keys=["label"], select_labels=[i for i in range(1, args.select_label_num)]),
             Orientationd(keys=["image", "label"], axcodes="RAS"),
             Spacingd(
                 keys=["image", "label"],
@@ -126,7 +128,8 @@ def get_inf_transform(keys, args):
         [
             LoadImaged(keys=keys),
             AddChanneld(keys=keys),
-            LabelToMaskd(keys=["label"], select_labels=[i for i in range(1, args.select_label_num)]),
+            LabelToBinaryLabeld(keys=["label"]),
+            # LabelToMaskd(keys=["label"], select_labels=[i for i in range(1, args.select_label_num)]),
             Orientationd(keys=keys, axcodes="RAS"),
             Spacingd(
                 keys=keys,

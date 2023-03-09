@@ -1,0 +1,34 @@
+# training
+!PYTHONPATH={workspace_dir} /opt/conda/envs/TeethSeg/bin/python {workspace_dir}/expers/train.py \
+--exp_name={exp_name} \
+--data_name={data_name} \
+--root_exp_dir={root_exp_dir} \
+--model_name={model_name}\
+--data_dir={data_dir} \
+--model_dir={model_dir} \
+--log_dir={log_dir} \
+--eval_dir={eval_dir} \
+--data_dicts_json={data_json} \
+--split_train_ratio=0.6 \
+--num_fold=3 \
+--fold=2 \
+--val_every=20 \
+--max_early_stop_count=20 \
+--max_epoch=20000  \
+--pin_memory \
+--out_channels=2 \
+--scale_intensity_type='range' \
+--a_min=218 \
+--a_max=3187 \
+--roi_x=64 \
+--roi_y=64 \
+--roi_z=64 \
+--space_x=0.4 \
+--space_y=0.4 \
+--space_z=0.4 \
+--optim='AdamW' \
+--lr=1e-4 \
+--weight_decay=5e-4 \
+--checkpoint={best_checkpoint} \
+--pretrain_checkpoint={pretrain_checkpoint} \
+--test_mode

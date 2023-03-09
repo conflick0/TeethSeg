@@ -48,17 +48,23 @@ def main_worker(args):
         # load model
         model.load_state_dict(checkpoint["state_dict"])
         # load check point epoch and best acc
-                
+        if "epoch" in checkpoint:
+            start_epoch = checkpoint["epoch"] + 1
+        if "best_acc" in checkpoint:
+            best_acc = checkpoint["best_acc"]
+        if "early_stop_count" in checkpoint:
+            early_stop_count = checkpoint["early_stop_count"]
         print(
-          "=> loaded checkpoint '{}')"\
-          .format(args.checkpoint)
-        )
+          "=> loaded checkpoint '{}' (epoch {}) (bestacc {}) (early stop count {})"\
+          .format(args.checkpoint, start_epoch, best_acc, early_stop_count)
+        )        
 
-    # inferer
+
+    # inferer jack
     keys = ['pred']
     post_transform = Compose([
         Orientationd(keys=keys, axcodes="LPS"),
-        ToNumpyd(keys=keys),
+        # ToNumpyd(keys=keys),
         Restored(keys=keys, ref_image="image")
     ])
     

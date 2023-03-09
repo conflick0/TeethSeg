@@ -79,6 +79,11 @@ def main_worker(args):
           "=> loaded checkpoint '{}' (epoch {}) (bestacc {}) (early stop count {})"\
           .format(args.checkpoint, start_epoch, best_acc, early_stop_count)
         )
+    else:
+        # pre_train_path = os.path.join(args.root_exp_dir, 'model_swinvit.pt')
+        weight = torch.load(args.pretrain_checkpoint)
+        model.load_from(weights=weight)
+        print("Using pretrained self-supervied Swin UNETR backbone weights !")
 
     # inferer
     post_label = AsDiscrete(to_onehot=args.out_channels)

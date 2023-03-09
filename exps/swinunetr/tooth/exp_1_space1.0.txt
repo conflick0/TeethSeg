@@ -1,0 +1,43 @@
+# training
+!PYTHONPATH={workspace_dir} /opt/conda/envs/TeethSeg/bin/python {workspace_dir}/expers/train.py \
+--exp_name={exp_name} \
+--data_name={data_name} \
+--root_exp_dir={root_exp_dir} \
+--model_name={model_name}\
+--data_dir={data_dir} \
+--model_dir={model_dir} \
+--log_dir={log_dir} \
+--eval_dir={eval_dir} \
+--data_dicts_json={data_json} \
+--split_train_ratio=0.6 \
+--num_fold=3 \
+--fold=2 \
+--val_every=20 \
+--max_early_stop_count=20 \
+--max_epoch=20000  \
+--pin_memory \
+--out_channels=2 \
+--scale_intensity_type='range' \
+--a_min=218 \
+--a_max=3187 \
+--roi_x=96 \
+--roi_y=96 \
+--roi_z=96 \
+--space_x=1.0 \
+--space_y=1.0 \
+--space_z=1.0 \
+--optim='AdamW' \
+--lr=1e-4 \
+--weight_decay=5e-4 \
+--checkpoint={best_checkpoint} \
+--pretrain_checkpoint={pretrain_checkpoint} \
+--test_mode
+
+------------------------------------------------------------
+patientId	type	diceT	hd95T
+1001486953_20180109	test	0.9528499	1
+1001487462_20170505	test	0.9009139	2.828427125
+1001487462_20180109	test	0.938574	8.062257748
+1001487462_20180527	test	0.9388438	6.708203932
+1001487462_20190427	test	0.95583355	1
+                    avg.    0.93740303	3.919777761
